@@ -1,5 +1,15 @@
 import { useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+    ActivityIndicator,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    Text,
+    TextInput,
+    View,
+} from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
 import { styles } from '../styles/RegisterStyles';
@@ -36,45 +46,70 @@ export default function RegisterScreen({ navigation }) {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.badge}>NUEVO USUARIO</Text>
-            <Text style={styles.title}>Crea tu cuenta</Text>
-            <Text style={styles.subtitle}>Regístrate con correo y contraseña.</Text>
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+            <ScrollView
+                contentContainerStyle={styles.scrollContent}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+            >
+                <View style={styles.header}>
+                    <Text style={styles.badge}>Nuevo Usuario</Text>
+                    <Text style={styles.title}>Crea tu cuenta</Text>
+                    <Text style={styles.subtitle}>Regístrate con correo y contraseña.</Text>
+                </View>
 
-            <View style={styles.form}>
-                <Text style={styles.label}>Correo electrónico</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="tu@correo.com"
-                    placeholderTextColor="#94a3b8"
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                    value={email}
-                    onChangeText={setEmail}
-                />
-                <Text style={styles.label}>Contraseña</Text>
-                <View style={styles.passwordRow}>
+                <View style={styles.form}>
+                    <Text style={styles.label}>Correo electrónico</Text>
                     <TextInput
-                        style={styles.passwordInput}
-                        placeholder="Mínimo 6 caracteres"
+                        style={styles.input}
+                        placeholder="tu@correo.com"
                         placeholderTextColor="#94a3b8"
-                        secureTextEntry={!showPassword}
-                        value={password}
-                        onChangeText={setPassword}
+                        autoCapitalize="none"
+                        keyboardType="email-address"
+                        value={email}
+                        onChangeText={setEmail}
                     />
-                    <Pressable onPress={() => setShowPassword(!showPassword)}>
-                        <Text style={styles.showPassword}>{showPassword ? 'Ocultar' : 'Ver'}</Text>
+
+                    <Text style={styles.label}>Contraseña</Text>
+                    <View style={styles.passwordRow}>
+                        <TextInput
+                            style={styles.passwordInput}
+                            placeholder="Mínimo 6 caracteres"
+                            placeholderTextColor="#94a3b8"
+                            secureTextEntry={!showPassword}
+                            value={password}
+                            onChangeText={setPassword}
+                        />
+                        <Pressable onPress={() => setShowPassword(!showPassword)} hitSlop={8}>
+                            <Text style={styles.showPassword}>{showPassword ? 'Ocultar' : 'Ver'}</Text>
+                        </Pressable>
+                    </View>
+
+                    <Pressable
+                        style={({ pressed }) => [
+                            styles.primaryButton,
+                            pressed && styles.primaryButtonPressed,
+                        ]}
+                        onPress={handleRegister}
+                        disabled={loading}
+                    >
+                        {loading ? (
+                            <ActivityIndicator color="#fff" />
+                        ) : (
+                            <Text style={styles.primaryButtonText}>Crear cuenta</Text>
+                        )}
                     </Pressable>
                 </View>
 
-                <Pressable style={styles.primaryButton} onPress={handleRegister} disabled={loading}>
-                    {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryButtonText}>Crear cuenta</Text>}
+                <Pressable onPress={() => navigation.navigate('Login')} style={styles.bottomButton}>
+                    <Text style={styles.bottomText}>
+                        ¿Ya tienes cuenta? <Text style={styles.linkText}>Inicia sesión</Text>
+                    </Text>
                 </Pressable>
-            </View>
-
-            <Pressable onPress={() => navigation.navigate('Login')} style={styles.bottomButton}>
-                <Text style={styles.bottomText}>¿Ya tienes cuenta? <Text style={styles.linkText}>Inicia sesión</Text></Text>
-            </Pressable>
-        </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }

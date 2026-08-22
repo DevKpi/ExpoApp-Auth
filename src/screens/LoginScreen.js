@@ -1,5 +1,15 @@
 import { useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, Text, TextInput, View } from 'react-native';
+import {
+    ActivityIndicator,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    Text,
+    TextInput,
+    View,
+} from 'react-native';
 import { sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
 import { styles } from '../styles/LoginStyles';
@@ -53,49 +63,75 @@ export default function LoginScreen({ navigation }) {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.badge}>FIREBASE AUTH</Text>
-            <Text style={styles.title}>Bienvenido de nuevo</Text>
-            <Text style={styles.subtitle}>Inicia sesión para continuar.</Text>
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+            <ScrollView
+                contentContainerStyle={styles.scrollContent}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+            >
+                <View style={styles.header}>
+                    <Text style={styles.badge}>Firebase Auth</Text>
+                    <Text style={styles.title}>Bienvenido de nuevo</Text>
+                    <Text style={styles.subtitle}>Inicia sesión para continuar.</Text>
+                </View>
 
-            <View style={styles.form}>
-                <Text style={styles.label}>Correo electrónico</Text>
-                {/* value y onChangeText conectan el input con el estado. */}
-                <TextInput
-                    style={styles.input}
-                    placeholder="tu@correo.com"
-                    placeholderTextColor="#94a3b8"
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                    value={email}
-                    onChangeText={setEmail}
-                />
-                <Text style={styles.label}>Contraseña</Text>
-                <View style={styles.passwordRow}>
+                <View style={styles.form}>
+                    <Text style={styles.label}>Correo electrónico</Text>
+                    {/* value y onChangeText conectan el input con el estado. */}
                     <TextInput
-                        style={styles.passwordInput}
-                        placeholder="Mínimo 6 caracteres"
+                        style={styles.input}
+                        placeholder="tu@correo.com"
                         placeholderTextColor="#94a3b8"
-                        secureTextEntry={!showPassword}
-                        value={password}
-                        onChangeText={setPassword}
+                        autoCapitalize="none"
+                        keyboardType="email-address"
+                        value={email}
+                        onChangeText={setEmail}
                     />
-                    <Pressable onPress={() => setShowPassword(!showPassword)}>
-                        <Text style={styles.showPassword}>{showPassword ? 'Ocultar' : 'Ver'}</Text>
+
+                    <Text style={styles.label}>Contraseña</Text>
+                    <View style={styles.passwordRow}>
+                        <TextInput
+                            style={styles.passwordInput}
+                            placeholder="Mínimo 6 caracteres"
+                            placeholderTextColor="#94a3b8"
+                            secureTextEntry={!showPassword}
+                            value={password}
+                            onChangeText={setPassword}
+                        />
+                        <Pressable onPress={() => setShowPassword(!showPassword)} hitSlop={8}>
+                            <Text style={styles.showPassword}>{showPassword ? 'Ocultar' : 'Ver'}</Text>
+                        </Pressable>
+                    </View>
+
+                    <Pressable
+                        style={({ pressed }) => [
+                            styles.primaryButton,
+                            pressed && styles.primaryButtonPressed,
+                        ]}
+                        onPress={handleLogin}
+                        disabled={loading}
+                    >
+                        {loading ? (
+                            <ActivityIndicator color="#fff" />
+                        ) : (
+                            <Text style={styles.primaryButtonText}>Entrar</Text>
+                        )}
+                    </Pressable>
+
+                    <Pressable onPress={handleResetPassword} style={styles.linkButton}>
+                        <Text style={styles.linkText}>¿Olvidaste tu contraseña?</Text>
                     </Pressable>
                 </View>
 
-                <Pressable style={styles.primaryButton} onPress={handleLogin} disabled={loading}>
-                    {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryButtonText}>Entrar</Text>}
+                <Pressable onPress={() => navigation.navigate('Registro')} style={styles.bottomButton}>
+                    <Text style={styles.bottomText}>
+                        ¿No tienes cuenta? <Text style={styles.linkText}>Regístrate</Text>
+                    </Text>
                 </Pressable>
-                <Pressable onPress={handleResetPassword} style={styles.linkButton}>
-                    <Text style={styles.linkText}>¿Olvidaste tu contraseña?</Text>
-                </Pressable>
-            </View>
-
-            <Pressable onPress={() => navigation.navigate('Registro')} style={styles.bottomButton}>
-                <Text style={styles.bottomText}>¿No tienes cuenta? <Text style={styles.linkText}>Regístrate</Text></Text>
-            </Pressable>
-        </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
