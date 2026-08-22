@@ -20,3 +20,46 @@ export const guardarToken = async (token) => {
 
 
 };
+
+export const obtenerToken = async () => {
+
+
+    try {
+
+
+        return await SecureStore.getItemAsync('userToken');
+
+
+    } catch (error) {
+
+
+        console.error('Error al obtener el token',error);
+
+
+        return null;
+
+
+    }
+
+
+};
+
+export const eliminarToken = async () => {
+
+
+    try {
+
+
+        await SecureStore.deleteItemAsync('userToken');
+
+
+    } catch (error) {
+
+
+        console.error('Error al eliminar el token',error);
+
+
+    }
+
+
+};
