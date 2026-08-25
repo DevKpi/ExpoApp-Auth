@@ -11,7 +11,7 @@ import {
     View,
 } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth } from '../firebase/firebase';
 import { styles } from '../styles/RegisterStyles';
 
 const firebaseMessages = {

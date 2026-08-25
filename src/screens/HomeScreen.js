@@ -1,6 +1,6 @@
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { signOut } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth } from '../firebase/firebase';
 import { styles } from '../styles/HomeStyles';
 
 export default function HomeScreen() {
