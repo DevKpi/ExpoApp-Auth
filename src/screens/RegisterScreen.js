@@ -35,7 +35,7 @@ export default function RegisterScreen({ navigation }) {
         }
 
         // Validación local para no consumir llamadas a la API de Firebase si no cumple el mínimo requerido.
-        if (password.length < 6) {
+        if (password.length <= 6) {
             Alert.alert('Contraseña muy corta', 'La contraseña debe tener al menos 6 caracteres.');
             return;
         }
