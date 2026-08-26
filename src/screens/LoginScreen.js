@@ -10,8 +10,7 @@ import {
     TextInput,
     View,
 } from 'react-native';
-import { sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase/firebase';
+import { login, resetPassword } from '../firebase/authService';
 import { styles } from '../styles/LoginStyles';
 
 const firebaseMessages = {
@@ -39,7 +38,7 @@ export default function LoginScreen({ navigation }) {
         setLoading(true);
         try {
             // Firebase comprueba las credenciales y crea la sesión.
-            await signInWithEmailAndPassword(auth, email.trim(), password);
+            await login(email.trim(), password);
         } catch (error) {
             Alert.alert('Firebase Auth', getErrorMessage(error));
         } finally {
@@ -55,7 +54,7 @@ export default function LoginScreen({ navigation }) {
 
         try {
             // Firebase envía un enlace de recuperación al correo indicado.
-            await sendPasswordResetEmail(auth, email.trim());
+            await resetPassword(email.trim());
             Alert.alert('Correo enviado', 'Revisa tu bandeja para restablecer la contraseña.');
         } catch (error) {
             Alert.alert('Firebase Auth', getErrorMessage(error));

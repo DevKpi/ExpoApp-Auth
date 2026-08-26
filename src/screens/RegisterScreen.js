@@ -10,8 +10,7 @@ import {
     TextInput,
     View,
 } from 'react-native';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase/firebase';
+import { register } from '../firebase/authService';
 import { styles } from '../styles/RegisterStyles';
 
 const firebaseMessages = {
@@ -35,7 +34,7 @@ export default function RegisterScreen({ navigation }) {
         }
 
         // Validación local para no consumir llamadas a la API de Firebase si no cumple el mínimo requerido.
-        if (password.length <= 6) {
+        if (password.length < 6) {
             Alert.alert('Contraseña muy corta', 'La contraseña debe tener al menos 6 caracteres.');
             return;
         }
@@ -43,7 +42,7 @@ export default function RegisterScreen({ navigation }) {
         setLoading(true);
         try {
             // Firebase crea la cuenta y también inicia la sesión.
-            await createUserWithEmailAndPassword(auth, email.trim(), password);
+            await register(email.trim(), password);
         } catch (error) {
             Alert.alert('Firebase Auth', firebaseMessages[error.code] || 'No se pudo crear la cuenta.');
         } finally {

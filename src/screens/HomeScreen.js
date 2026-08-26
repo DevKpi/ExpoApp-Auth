@@ -1,6 +1,6 @@
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
-import { signOut } from 'firebase/auth';
 import { auth } from '../firebase/firebase';
+import { logout } from '../firebase/authService';
 import { styles } from '../styles/HomeStyles';
 
 export default function HomeScreen() {
@@ -8,7 +8,7 @@ export default function HomeScreen() {
 
     const handleLogout = async () => {
         try {
-            await signOut(auth);
+            await logout();
         } catch (error) {
             Alert.alert('Error', 'No se pudo cerrar la sesión.');
         }
