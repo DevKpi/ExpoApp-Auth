@@ -1,17 +1,14 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../firebase/firebase';
-import HomeScreen from '../screens/HomeScreen';
-import LoginScreen from '../screens/LoginScreen';
-import RegisterScreen from '../screens/RegisterScreen';
 
-const Stack = createNativeStackNavigator();
+import AppStack from './AppStack';
+import AuthStack from './AuthStack';
 
 export default function AppNavigator() {
-    // Guardamos el usuario actual para decidir qué pantallas mostrar.
+    // Guardamos el usuario actual para decidir qué stack mostrar.
     const [user, setUser] = useState(null);
     const [checkingSession, setCheckingSession] = useState(true);
 
@@ -37,23 +34,17 @@ export default function AppNavigator() {
 
     return (
         <NavigationContainer>
-            {/* Opciones según el estado de la sesión */}
-            {user ? (
-                // Opciones con sesión
-                <Stack.Navigator screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name="Inicio" component={HomeScreen} />
-                </Stack.Navigator>
-            ) : (
-                // Opciones sin sesión
-                <Stack.Navigator screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name="Login" component={LoginScreen} />
-                    <Stack.Screen name="Registro" component={RegisterScreen} />
-                </Stack.Navigator>
-            )}
+            {user ? <AppStack /> : <AuthStack />}
         </NavigationContainer>
     );
 }
 
+// Estilos para la pantalla de carga mientras se revisa la sesión.
 const styles = StyleSheet.create({
-    loadingContainer: { alignItems: 'center', backgroundColor: '#f8fafc', flex: 1, justifyContent: 'center' },
+    loadingContainer: { 
+        alignItems: 'center', 
+        backgroundColor: '#f8fafc', 
+        flex: 1, 
+        justifyContent: 'center' 
+    },
 });
