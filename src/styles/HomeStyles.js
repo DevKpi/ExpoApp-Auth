@@ -87,6 +87,40 @@ export const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '700',
     },
+    actionsContainer: {
+        gap: 12,
+    },
+    primaryButton: {
+        alignItems: 'center',
+        backgroundColor: '#2563eb',
+        borderRadius: 12,
+        justifyContent: 'center',
+        minHeight: 52,
+        ...Platform.select({
+            ios: {
+                shadowColor: '#2563eb',
+                shadowOffset: { width: 0, height: 6 },
+                shadowOpacity: 0.28,
+                shadowRadius: 10,
+            },
+            android: {
+                elevation: 3,
+            },
+            web: {
+                boxShadow: '0 4px 14px 0 rgba(37, 99, 235, 0.3)',
+            },
+        }),
+    },
+    primaryButtonPressed: {
+        backgroundColor: '#1d4ed8',
+        transform: [{ scale: 0.99 }],
+    },
+    primaryButtonText: {
+        color: '#ffffff',
+        fontSize: 16,
+        fontWeight: '700',
+        letterSpacing: 0.2,
+    },
     logoutButton: {
         alignItems: 'center',
         backgroundColor: '#ef4444',

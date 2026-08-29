@@ -3,7 +3,7 @@ import { auth } from '../firebase/firebase';
 import { logout } from '../firebase/authService';
 import { styles } from '../styles/HomeStyles';
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
     const user = auth.currentUser;
 
     const handleLogout = async () => {
@@ -39,15 +39,27 @@ export default function HomeScreen() {
                     </View>
                 </View>
 
-                <Pressable
-                    style={({ pressed }) => [
-                        styles.logoutButton,
-                        pressed && styles.logoutButtonPressed,
-                    ]}
-                    onPress={handleLogout}
-                >
-                    <Text style={styles.logoutButtonText}>Cerrar Sesión</Text>
-                </Pressable>
+                <View style={styles.actionsContainer}>
+                    <Pressable
+                        style={({ pressed }) => [
+                            styles.primaryButton,
+                            pressed && styles.primaryButtonPressed,
+                        ]}
+                        onPress={() => navigation.navigate('Perfil')}
+                    >
+                        <Text style={styles.primaryButtonText}>Ver Perfil</Text>
+                    </Pressable>
+
+                    <Pressable
+                        style={({ pressed }) => [
+                            styles.logoutButton,
+                            pressed && styles.logoutButtonPressed,
+                        ]}
+                        onPress={handleLogout}
+                    >
+                        <Text style={styles.logoutButtonText}>Cerrar Sesión</Text>
+                    </Pressable>
+                </View>
             </ScrollView>
         </View>
     );
