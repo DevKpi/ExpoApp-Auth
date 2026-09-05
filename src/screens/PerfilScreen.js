@@ -1,10 +1,13 @@
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
-import { auth } from '../firebase/firebase';
+// import { auth } from '../firebase/firebase';
 import { logout } from '../firebase/authService';
 import { styles } from '../styles/PerfilStyles';
+import { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 
 export default function PerfilScreen({ navigation }) {
-    const user = auth.currentUser;
+    const { user } = useContext(AuthContext);
+    // const user = auth.currentUser;
     const initial = user?.email ? user.email.charAt(0).toUpperCase() : 'U';
 
     const handleLogout = async () => {
