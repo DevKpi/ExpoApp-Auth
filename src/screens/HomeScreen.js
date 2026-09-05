@@ -19,7 +19,7 @@ export default function HomeScreen({ navigation }) {
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
                 <View style={styles.header}>
                     <Text style={styles.badge}>Sesión Activa</Text>
-                    <Text style={styles.title}>¡Hola de nuevo!</Text>
+                    <Text style={styles.title}>¡Hola {user?.email ? user.email.split('@')[0] : 'Usuario'}!</Text>
                     <Text style={styles.subtitle}>Has iniciado sesión con éxito en Firebase.</Text>
                 </View>
 
