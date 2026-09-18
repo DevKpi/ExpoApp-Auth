@@ -5,10 +5,36 @@ import { styles } from '../styles/PerfilStyles';
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 
+import {addDoc, collection, doc, setDoc} from 'firebase/firestore';
+import { db } from '../firebase/firebase';
+
+
 export default function PerfilScreen({ navigation }) {
     const { user } = useContext(AuthContext);
     // const user = auth.currentUser;
     const initial = user?.email ? user.email.charAt(0).toUpperCase() : 'U';
+
+    // addDoc(
+    //     collection(db, 'usuarios'),
+    //     {
+    //         nombre: 'Juan',
+    //         email: 'juan@email.com'
+    //     }
+    // );
+
+
+
+    setDoc(doc(db, 'users', user.uid), {
+        email: user.email,
+        uid: user.uid,
+        camptest: 'Perfil de usuario',
+    }, { merge: true })
+    .then(() => {
+        console.log('Datos del usuario guardados correctamente en Firestore.');
+    })
+    .catch((error) => {
+        console.error('Error al guardar los datos del usuario en Firestore:', error);
+    });
 
     const handleLogout = async () => {
         try {
