@@ -21,4 +21,3 @@ export const getUserData = async (userId) => {
 };
 
 export const saveUserData = SaveUserData;
-
