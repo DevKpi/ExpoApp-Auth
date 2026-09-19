@@ -2,17 +2,59 @@ import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 // import { auth } from '../firebase/firebase';
 import { logout } from '../firebase/authService';
 import { styles } from '../styles/PerfilStyles';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 
 import {addDoc, collection, doc, setDoc} from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 
+import { saveUserData, getUser } from '../services/userService';
 
 export default function PerfilScreen({ navigation }) {
     const { user } = useContext(AuthContext);
     // const user = auth.currentUser;
     const initial = user?.email ? user.email.charAt(0).toUpperCase() : 'U';
+
+    const [profile, setProfile] = useState(null);
+
+    useEffect(() => {
+        console.log('--- [PerfilScreen] 1. useEffect iniciado ---');
+        console.log('[PerfilScreen] Estado de user en AuthContext:', user);
+
+        const loadProfile = async () => {
+            if (!user?.uid) {
+                console.log('⚠️ [PerfilScreen] 2. No hay usuario autenticado o user.uid aún no está disponible. Saliendo de loadProfile.');
+                return;
+            }
+
+            console.log(`🚀 [PerfilScreen] 2. Iniciando carga de perfil para UID: ${user.uid} (${user.email || 'Sin correo'})`);
+
+            try {
+                console.log('📡 [PerfilScreen] 3. Llamando a getUser(uid)...');
+                const data = await getUser(user.uid);
+
+                console.log('📥 [PerfilScreen] 4. Resultado obtenido de getUser:', data);
+
+                if (data) {
+                    console.log('✅ [PerfilScreen] 5. Datos encontrados en la colección "usuarios":', data);
+                } else {
+                    console.log('ℹ️ [PerfilScreen] 5. No se encontró documento para este UID en "usuarios" (retornó null).');
+                }
+
+                setProfile(data);
+                console.log('💾 [PerfilScreen] 6. setProfile(data) ejecutado.');
+            } catch (error) {
+                console.error('❌ [PerfilScreen] Error al cargar perfil:', error);
+            }
+        };
+
+        loadProfile();
+
+        return () => {
+            console.log('🧹 [PerfilScreen] Limpieza del useEffect (desmontaje o cambio de usuario)');
+        };
+    }, [user?.uid]);
+
 
     // addDoc(
     //     collection(db, 'usuarios'),
@@ -24,17 +66,17 @@ export default function PerfilScreen({ navigation }) {
 
 
 
-    setDoc(doc(db, 'users', user.uid), {
-        email: user.email,
-        uid: user.uid,
-        camptest: 'Perfil de usuario',
-    }, { merge: true })
-    .then(() => {
-        console.log('Datos del usuario guardados correctamente en Firestore.');
-    })
-    .catch((error) => {
-        console.error('Error al guardar los datos del usuario en Firestore:', error);
-    });
+    // setDoc(doc(db, 'users', user.uid), {
+    //     email: user.email,
+    //     uid: user.uid,
+    //     camptest: 'Perfil de usuario',
+    // }, { merge: true })
+    // .then(() => {
+    //     console.log('Datos del usuario guardados correctamente en Firestore.');
+    // })
+    // .catch((error) => {
+    //     console.error('Error al guardar los datos del usuario en Firestore:', error);
+    // });
 
     const handleLogout = async () => {
         try {
