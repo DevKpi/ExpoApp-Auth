@@ -23,14 +23,15 @@ const firebaseMessages = {
 export default function RegisterScreen({ navigation }) {
     // Guardamos los datos que escribe el alumno en el formulario.
     const [email, setEmail] = useState('');
+    const [nombre, setNombre] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     const handleRegister = async () => {
         // No intentamos registrar usuarios con campos vacíos.
-        if (!email.trim() || !password) {
-            Alert.alert('Faltan datos', 'Completa el correo y la contraseña.');
+        if (!email.trim() || !nombre.trim() || !password) {
+            Alert.alert('Faltan datos', 'Completa todos los campos (correo, nombre y contraseña).');
             return;
         }
 
@@ -50,6 +51,7 @@ export default function RegisterScreen({ navigation }) {
             await saveUserData(user.uid, {
                 uid: user.uid,
                 email: user.email,
+                nombre: nombre.trim(),
                 createdAt: new Date().toISOString(),
             });
         } catch (error) {
@@ -85,6 +87,16 @@ export default function RegisterScreen({ navigation }) {
                         keyboardType="email-address"
                         value={email}
                         onChangeText={setEmail}
+                    />
+
+                    <Text style={styles.label}>Nombre completo</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Tu nombre y apellido"
+                        placeholderTextColor="#94a3b8"
+                        autoCapitalize="words"
+                        value={nombre}
+                        onChangeText={setNombre}
                     />
 
                     <Text style={styles.label}>Contraseña</Text>

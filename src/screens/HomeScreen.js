@@ -45,6 +45,16 @@ export default function HomeScreen({ navigation }) {
                             styles.primaryButton,
                             pressed && styles.primaryButtonPressed,
                         ]}
+                        onPress={() => navigation.navigate('Tareas')}
+                    >
+                        <Text style={styles.primaryButtonText}>Ver Tareas</Text>
+                    </Pressable>
+
+                    <Pressable
+                        style={({ pressed }) => [
+                            styles.primaryButton,
+                            pressed && styles.primaryButtonPressed,
+                        ]}
                         onPress={() => navigation.navigate('Perfil')}
                     >
                         <Text style={styles.primaryButtonText}>Ver Perfil</Text>
