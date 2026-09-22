@@ -12,9 +12,11 @@ export default function AppStack() {
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Inicio" component={HomeScreen} />
             <Stack.Screen name="Perfil" component={PerfilScreen} />
+            <Stack.Screen name="TaskScreen" component={TaskScreen} />
             <Stack.Screen name="Tareas" component={TaskScreen} />
             <Stack.Screen name="Tasks" component={TaskScreen} />
             <Stack.Screen name="AddTask" component={AddTaskScreen} />
+            <Stack.Screen name="AddTaskScreen" component={AddTaskScreen} />
             {/* <Stack.Screen name="Configuración" component={ConfigScreen} /> */}
         </Stack.Navigator>
     );

@@ -45,7 +45,7 @@ export default function HomeScreen({ navigation }) {
                             styles.primaryButton,
                             pressed && styles.primaryButtonPressed,
                         ]}
-                        onPress={() => navigation.navigate('Tareas')}
+                        onPress={() => navigation.navigate('TaskScreen')}
                     >
                         <Text style={styles.primaryButtonText}>Ver Tareas</Text>
                     </Pressable>

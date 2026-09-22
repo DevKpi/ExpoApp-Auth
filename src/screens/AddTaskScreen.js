@@ -23,12 +23,20 @@ export default function AddTaskScreen({ navigation }) {
 
     const handleSaveTask = async () => {
         if (!titulo.trim()) {
-            Alert.alert('Campo requerido', 'Por favor ingresa un título para la tarea.');
+            if (Platform.OS === 'web' && typeof window !== 'undefined') {
+                window.alert('Por favor ingresa un título para la tarea.');
+            } else {
+                Alert.alert('Campo requerido', 'Por favor ingresa un título para la tarea.');
+            }
             return;
         }
 
         if (!user?.uid) {
-            Alert.alert('Error', 'No se encontró una sesión activa de usuario.');
+            if (Platform.OS === 'web' && typeof window !== 'undefined') {
+                window.alert('No se encontró una sesión activa de usuario.');
+            } else {
+                Alert.alert('Error', 'No se encontró una sesión activa de usuario.');
+            }
             return;
         }
 
@@ -40,15 +48,34 @@ export default function AddTaskScreen({ navigation }) {
                 userId: user.uid,
             });
 
-            Alert.alert('Éxito', 'Tarea creada correctamente.', [
-                {
-                    text: 'OK',
-                    onPress: () => navigation.goBack(),
-                },
-            ]);
+            if (Platform.OS === 'web') {
+                if (typeof window !== 'undefined' && window.alert) {
+                    window.alert('Tarea creada correctamente.');
+                }
+                navigation.navigate('TaskScreen');
+            } else {
+                Alert.alert(
+                    'Éxito',
+                    'Tarea creada correctamente.',
+                    [
+                        {
+                            text: 'OK',
+                            onPress: () => navigation.navigate('TaskScreen'),
+                        },
+                    ],
+                    {
+                        cancelable: true,
+                        onDismiss: () => navigation.navigate('TaskScreen'),
+                    }
+                );
+            }
         } catch (error) {
             console.error('Error al guardar tarea:', error);
-            Alert.alert('Error', 'No se pudo guardar la tarea. Intenta de nuevo.');
+            if (Platform.OS === 'web' && typeof window !== 'undefined') {
+                window.alert('No se pudo guardar la tarea. Intenta de nuevo.');
+            } else {
+                Alert.alert('Error', 'No se pudo guardar la tarea. Intenta de nuevo.');
+            }
         } finally {
             setLoading(false);
         }
@@ -62,7 +89,7 @@ export default function AddTaskScreen({ navigation }) {
             <View style={styles.header}>
                 <View style={styles.headerTopRow}>
                     <Text style={styles.badge}>Nueva Tarea</Text>
-                    <Pressable onPress={() => navigation.goBack()} hitSlop={10}>
+                    <Pressable onPress={() => navigation.navigate('TaskScreen')} hitSlop={10}>
                         <Text style={styles.backButtonText}>Cancelar</Text>
                     </Pressable>
                 </View>
@@ -123,7 +150,7 @@ export default function AddTaskScreen({ navigation }) {
                             styles.secondaryButton,
                             pressed && styles.secondaryButtonPressed,
                         ]}
-                        onPress={() => navigation.goBack()}
+                        onPress={() => navigation.navigate('TaskScreen')}
                         disabled={loading}
                     >
                         <Text style={styles.secondaryButtonText}>Volver a la lista</Text>
