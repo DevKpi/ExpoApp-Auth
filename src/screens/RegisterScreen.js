@@ -11,6 +11,7 @@ import {
     View,
 } from 'react-native';
 import { register } from '../firebase/authService';
+import { saveUserData } from '../services/userService';
 import { styles } from '../styles/RegisterStyles';
 
 const firebaseMessages = {
@@ -42,9 +43,17 @@ export default function RegisterScreen({ navigation }) {
         setLoading(true);
         try {
             // Firebase crea la cuenta y también inicia la sesión.
-            await register(email.trim(), password);
+            const userCredential = await register(email.trim(), password);
+            const user = userCredential.user;
+
+            // Guardamos los datos del usuario en la colección "usuarios" de Firestore
+            await saveUserData(user.uid, {
+                uid: user.uid,
+                email: user.email,
+                createdAt: new Date().toISOString(),
+            });
         } catch (error) {
-            Alert.alert('Firebase Auth', firebaseMessages[error.code] || 'No se pudo crear la cuenta.');
+            Alert.alert('Error al registrar', firebaseMessages[error.code] || error.message || 'No se pudo crear la cuenta.');
         } finally {
             setLoading(false);
         }
