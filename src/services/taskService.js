@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 
 /**
@@ -72,3 +72,58 @@ export const GetUserTask = async (userId) => {
 
 export const getUserTask = GetUserTask;
 export const getUserTasks = GetUserTask;
+
+/**
+ * Actualiza una tarea en la colección 'tareas' de Firestore.
+ * Utilizado para alternar el estado (completada) o actualizar campos de una tarea.
+ *
+ * Soporta diferentes formatos:
+ * - SetUserTask(taskId, { completada: true })
+ * - SetUserTask(taskId, true) // actualiza directamente el estado completada
+ * - SetUserTask({ id: taskId, completada: true })
+ */
+export const SetUserTask = async (taskIdOrTask, taskData) => {
+    try {
+        let taskId = '';
+        let updateData = {};
+
+        if (typeof taskIdOrTask === 'string') {
+            taskId = taskIdOrTask;
+            if (typeof taskData === 'boolean') {
+                updateData = { completada: taskData };
+            } else if (typeof taskData === 'object' && taskData !== null) {
+                updateData = { ...taskData };
+            } else {
+                throw new Error('Datos de actualización inválidos');
+            }
+        } else if (typeof taskIdOrTask === 'object' && taskIdOrTask !== null) {
+            taskId = taskIdOrTask.id || taskIdOrTask.taskId;
+            if (taskData && typeof taskData === 'object') {
+                updateData = { ...taskData };
+            } else if (typeof taskData === 'boolean') {
+                updateData = { completada: taskData };
+            } else {
+                const { id, taskId: _, ...rest } = taskIdOrTask;
+                updateData = rest;
+            }
+        } else {
+            throw new Error('Parámetros de tarea inválidos');
+        }
+
+        if (!taskId) {
+            throw new Error('ID de la tarea no proporcionado para actualizar');
+        }
+
+        const taskRef = doc(db, 'tareas', taskId);
+        await updateDoc(taskRef, updateData);
+
+        return { id: taskId, ...updateData };
+    } catch (error) {
+        console.error('Error al actualizar la tarea:', error);
+        throw error;
+    }
+};
+
+export const setUserTask = SetUserTask;
+export const UpdateUserTask = SetUserTask;
+export const updateUserTask = SetUserTask;
