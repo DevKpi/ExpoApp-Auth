@@ -1,7 +1,9 @@
 import { useCallback, useContext, useState } from 'react';
 import {
     ActivityIndicator,
+    Alert,
     FlatList,
+    Platform,
     Pressable,
     RefreshControl,
     Text,
@@ -9,7 +11,7 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from '../context/AuthContext';
-import { GetUserTask } from '../services/taskService';
+import { GetUserTask, SetUserTask } from '../services/taskService';
 import { styles } from '../styles/TaskStyles';
 
 export default function TaskScreen({ navigation }) {
@@ -17,6 +19,7 @@ export default function TaskScreen({ navigation }) {
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
+    const [updatingTaskId, setUpdatingTaskId] = useState(null);
 
     const loadTasks = async () => {
         if (!user?.uid) {
@@ -35,6 +38,31 @@ export default function TaskScreen({ navigation }) {
         }
     };
 
+    const handleToggleTask = async (task) => {
+        if (!task?.id || updatingTaskId === task.id) return;
+
+        const newStatus = !task.completada;
+        setUpdatingTaskId(task.id);
+
+        try {
+            await SetUserTask(task.id, { completada: newStatus });
+            setTasks((prevTasks) =>
+                prevTasks.map((t) =>
+                    t.id === task.id ? { ...t, completada: newStatus } : t
+                )
+            );
+        } catch (error) {
+            console.error('Error al actualizar el estado de la tarea:', error);
+            if (Platform.OS === 'web' && typeof window !== 'undefined') {
+                window.alert('No se pudo actualizar el estado de la tarea.');
+            } else {
+                Alert.alert('Error', 'No se pudo actualizar el estado de la tarea.');
+            }
+        } finally {
+            setUpdatingTaskId(null);
+        }
+    };
+
     // Recarga las tareas cada vez que la pantalla vuelve a estar en foco
     useFocusEffect(
         useCallback(() => {
@@ -49,6 +77,7 @@ export default function TaskScreen({ navigation }) {
 
     const renderTaskItem = ({ item }) => {
         const isCompleted = Boolean(item.completada);
+        const isUpdating = updatingTaskId === item.id;
 
         return (
             <View style={[styles.taskCard, isCompleted && styles.taskCardCompleted]}>
@@ -56,10 +85,14 @@ export default function TaskScreen({ navigation }) {
                     <Text style={[styles.taskTitle, isCompleted && styles.taskTitleCompleted]}>
                         {item.titulo}
                     </Text>
-                    <View
-                        style={[
+                    <Pressable
+                        onPress={() => handleToggleTask(item)}
+                        disabled={isUpdating}
+                        hitSlop={8}
+                        style={({ pressed }) => [
                             styles.statusBadge,
                             isCompleted ? styles.statusBadgeCompleted : styles.statusBadgePending,
+                            pressed && { opacity: 0.7 },
                         ]}
                     >
                         <Text
@@ -69,7 +102,37 @@ export default function TaskScreen({ navigation }) {
                         >
                             {isCompleted ? 'Completada' : 'Pendiente'}
                         </Text>
-                    </View>
+                    </Pressable>
+                </View>
+
+                <View style={styles.taskActions}>
+                    <Pressable
+                        style={({ pressed }) => [
+                            styles.toggleButton,
+                            isCompleted ? styles.toggleButtonCompleted : styles.toggleButtonPending,
+                            pressed && styles.toggleButtonPressed,
+                        ]}
+                        onPress={() => handleToggleTask(item)}
+                        disabled={isUpdating}
+                    >
+                        {isUpdating ? (
+                            <ActivityIndicator
+                                size="small"
+                                color={isCompleted ? '#b45309' : '#16a34a'}
+                            />
+                        ) : (
+                            <Text
+                                style={[
+                                    styles.toggleButtonText,
+                                    isCompleted
+                                        ? styles.toggleButtonTextCompleted
+                                        : styles.toggleButtonTextPending,
+                                ]}
+                            >
+                                {isCompleted ? '↺ Marcar como pendiente' : '✓ Marcar como completada'}
+                            </Text>
+                        )}
+                    </Pressable>
                 </View>
             </View>
         );

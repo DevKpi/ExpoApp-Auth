@@ -301,4 +301,44 @@ export const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: '600',
     },
+    taskActions: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        marginTop: 12,
+        paddingTop: 12,
+        borderTopWidth: 1,
+        borderTopColor: '#f1f5f9',
+    },
+    toggleButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 8,
+        paddingHorizontal: 14,
+        borderRadius: 10,
+        borderWidth: 1,
+    },
+    toggleButtonPressed: {
+        opacity: 0.75,
+        transform: [{ scale: 0.98 }],
+    },
+    toggleButtonPending: {
+        backgroundColor: '#f0fdf4',
+        borderColor: '#bbf7d0',
+    },
+    toggleButtonCompleted: {
+        backgroundColor: '#fffbeb',
+        borderColor: '#fde68a',
+    },
+    toggleButtonText: {
+        fontSize: 13,
+        fontWeight: '600',
+    },
+    toggleButtonTextPending: {
+        color: '#16a34a',
+    },
+    toggleButtonTextCompleted: {
+        color: '#b45309',
+    },
 });
