@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, query, where, doc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 
 /**
@@ -127,3 +127,38 @@ export const SetUserTask = async (taskIdOrTask, taskData) => {
 export const setUserTask = SetUserTask;
 export const UpdateUserTask = SetUserTask;
 export const updateUserTask = SetUserTask;
+
+/**
+ * Elimina una tarea de la colección 'tareas' de Firestore usando deleteDoc.
+ *
+ * Soporta:
+ * - DeleteUserTask(taskId)
+ * - DeleteUserTask({ id: taskId })
+ */
+export const DeleteUserTask = async (taskIdOrTask) => {
+    try {
+        let taskId = '';
+
+        if (typeof taskIdOrTask === 'string') {
+            taskId = taskIdOrTask;
+        } else if (typeof taskIdOrTask === 'object' && taskIdOrTask !== null) {
+            taskId = taskIdOrTask.id || taskIdOrTask.taskId;
+        }
+
+        if (!taskId) {
+            throw new Error('ID de la tarea no proporcionado para eliminar');
+        }
+
+        const taskRef = doc(db, 'tareas', taskId);
+        await deleteDoc(taskRef);
+
+        return { success: true, id: taskId };
+    } catch (error) {
+        console.error('Error al eliminar la tarea:', error);
+        throw error;
+    }
+};
+
+export const deleteUserTask = DeleteUserTask;
+export const DeleteTask = DeleteUserTask;
+export const deleteTask = DeleteUserTask;
