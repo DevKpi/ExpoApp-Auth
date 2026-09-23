@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from '../context/AuthContext';
-import { GetUserTask, SetUserTask } from '../services/taskService';
+import { GetUserTask, SetUserTask, DeleteUserTask } from '../services/taskService';
 import { styles } from '../styles/TaskStyles';
 
 export default function TaskScreen({ navigation }) {
@@ -20,6 +20,7 @@ export default function TaskScreen({ navigation }) {
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [updatingTaskId, setUpdatingTaskId] = useState(null);
+    const [deletingTaskId, setDeletingTaskId] = useState(null);
 
     const loadTasks = async () => {
         if (!user?.uid) {
@@ -63,6 +64,50 @@ export default function TaskScreen({ navigation }) {
         }
     };
 
+    const confirmDeleteTask = async (task) => {
+        if (!task?.id || deletingTaskId === task.id) return;
+
+        setDeletingTaskId(task.id);
+        try {
+            await DeleteUserTask(task.id);
+            setTasks((prevTasks) => prevTasks.filter((t) => t.id !== task.id));
+        } catch (error) {
+            console.error('Error al eliminar la tarea:', error);
+            if (Platform.OS === 'web' && typeof window !== 'undefined') {
+                window.alert('No se pudo eliminar la tarea. Intenta de nuevo.');
+            } else {
+                Alert.alert('Error', 'No se pudo eliminar la tarea. Intenta de nuevo.');
+            }
+        } finally {
+            setDeletingTaskId(null);
+        }
+    };
+
+    const handleDeleteTask = (task) => {
+        if (Platform.OS === 'web') {
+            const confirmed =
+                typeof window !== 'undefined'
+                    ? window.confirm('¿Estás seguro de que deseas eliminar esta tarea?')
+                    : true;
+            if (confirmed) {
+                confirmDeleteTask(task);
+            }
+        } else {
+            Alert.alert(
+                'Eliminar tarea',
+                '¿Estás seguro de que deseas eliminar esta tarea?',
+                [
+                    { text: 'Cancelar', style: 'cancel' },
+                    {
+                        text: 'Eliminar',
+                        style: 'destructive',
+                        onPress: () => confirmDeleteTask(task),
+                    },
+                ]
+            );
+        }
+    };
+
     // Recarga las tareas cada vez que la pantalla vuelve a estar en foco
     useFocusEffect(
         useCallback(() => {
@@ -78,6 +123,7 @@ export default function TaskScreen({ navigation }) {
     const renderTaskItem = ({ item }) => {
         const isCompleted = Boolean(item.completada);
         const isUpdating = updatingTaskId === item.id;
+        const isDeleting = deletingTaskId === item.id;
 
         return (
             <View style={[styles.taskCard, isCompleted && styles.taskCardCompleted]}>
@@ -87,7 +133,7 @@ export default function TaskScreen({ navigation }) {
                     </Text>
                     <Pressable
                         onPress={() => handleToggleTask(item)}
-                        disabled={isUpdating}
+                        disabled={isUpdating || isDeleting}
                         hitSlop={8}
                         style={({ pressed }) => [
                             styles.statusBadge,
@@ -95,42 +141,37 @@ export default function TaskScreen({ navigation }) {
                             pressed && { opacity: 0.7 },
                         ]}
                     >
-                        <Text
-                            style={
-                                isCompleted ? styles.statusTextCompleted : styles.statusTextPending
-                            }
-                        >
-                            {isCompleted ? 'Completada' : 'Pendiente'}
-                        </Text>
+                        {isUpdating ? (
+                            <ActivityIndicator
+                                size="small"
+                                color={isCompleted ? '#16a34a' : '#d97706'}
+                            />
+                        ) : (
+                            <Text
+                                style={
+                                    isCompleted ? styles.statusTextCompleted : styles.statusTextPending
+                                }
+                            >
+                                {isCompleted ? 'Completada' : 'Pendiente'}
+                            </Text>
+                        )}
                     </Pressable>
                 </View>
 
                 <View style={styles.taskActions}>
                     <Pressable
                         style={({ pressed }) => [
-                            styles.toggleButton,
-                            isCompleted ? styles.toggleButtonCompleted : styles.toggleButtonPending,
-                            pressed && styles.toggleButtonPressed,
+                            styles.deleteButton,
+                            pressed && styles.deleteButtonPressed,
                         ]}
-                        onPress={() => handleToggleTask(item)}
-                        disabled={isUpdating}
+                        onPress={() => handleDeleteTask(item)}
+                        disabled={isUpdating || isDeleting}
+                        hitSlop={6}
                     >
-                        {isUpdating ? (
-                            <ActivityIndicator
-                                size="small"
-                                color={isCompleted ? '#b45309' : '#16a34a'}
-                            />
+                        {isDeleting ? (
+                            <ActivityIndicator size="small" color="#dc2626" />
                         ) : (
-                            <Text
-                                style={[
-                                    styles.toggleButtonText,
-                                    isCompleted
-                                        ? styles.toggleButtonTextCompleted
-                                        : styles.toggleButtonTextPending,
-                                ]}
-                            >
-                                {isCompleted ? '↺ Marcar como pendiente' : '✓ Marcar como completada'}
-                            </Text>
+                            <Text style={styles.deleteButtonText}>🗑️ Eliminar</Text>
                         )}
                     </Pressable>
                 </View>

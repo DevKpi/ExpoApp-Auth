@@ -306,39 +306,28 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-end',
         marginTop: 12,
-        paddingTop: 12,
+        paddingTop: 10,
         borderTopWidth: 1,
         borderTopColor: '#f1f5f9',
     },
-    toggleButton: {
+    deleteButton: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         paddingVertical: 8,
-        paddingHorizontal: 14,
+        paddingHorizontal: 12,
         borderRadius: 10,
         borderWidth: 1,
+        backgroundColor: '#fef2f2',
+        borderColor: '#fecaca',
     },
-    toggleButtonPressed: {
-        opacity: 0.75,
+    deleteButtonPressed: {
+        backgroundColor: '#fee2e2',
         transform: [{ scale: 0.98 }],
     },
-    toggleButtonPending: {
-        backgroundColor: '#f0fdf4',
-        borderColor: '#bbf7d0',
-    },
-    toggleButtonCompleted: {
-        backgroundColor: '#fffbeb',
-        borderColor: '#fde68a',
-    },
-    toggleButtonText: {
+    deleteButtonText: {
+        color: '#dc2626',
         fontSize: 13,
         fontWeight: '600',
-    },
-    toggleButtonTextPending: {
-        color: '#16a34a',
-    },
-    toggleButtonTextCompleted: {
-        color: '#b45309',
     },
 });
