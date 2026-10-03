@@ -113,6 +113,7 @@ export default function PerfilScreen({ navigation }) {
 
             if (!result.canceled && result.assets && result.assets.length > 0) {
                 setImage(result.assets[0].uri);
+                console.log(result.assets[0].uri);
             }
         } catch (error) {
             console.error('Error al seleccionar imagen:', error);
