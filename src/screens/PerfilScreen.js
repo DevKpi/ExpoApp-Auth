@@ -1,4 +1,4 @@
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
 // import { auth } from '../firebase/firebase';
 import { logout } from '../firebase/authService';
 import { styles } from '../styles/PerfilStyles';
@@ -10,12 +10,15 @@ import { db } from '../firebase/firebase';
 
 import { saveUserData, getUser } from '../services/userService';
 
+import * as ImagePicker from 'expo-image-picker';
+
 export default function PerfilScreen({ navigation }) {
     const { user } = useContext(AuthContext);
     // const user = auth.currentUser;
     const initial = user?.email ? user.email.charAt(0).toUpperCase() : 'U';
 
     const [profile, setProfile] = useState(null);
+    const [image, setImage] = useState(null);
 
     useEffect(() => {
         console.log('--- [PerfilScreen] 1. useEffect iniciado ---');
@@ -86,13 +89,58 @@ export default function PerfilScreen({ navigation }) {
         }
     };
 
+    const pickImage = async () => {
+        try {
+            // Solicitar permisos de galería si es necesario
+            const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+            if (!permissionResult.granted) {
+                Alert.alert(
+                    'Permiso requerido',
+                    'Se necesitan permisos de acceso a la galería para seleccionar una imagen.'
+                );
+                return;
+            }
+
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ['images'],
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 1,
+            });
+
+            console.log('Resultado de ImagePicker:', result);
+
+            if (!result.canceled && result.assets && result.assets.length > 0) {
+                setImage(result.assets[0].uri);
+            }
+        } catch (error) {
+            console.error('Error al seleccionar imagen:', error);
+            Alert.alert('Error', 'No se pudo abrir la galería de imágenes.');
+        }
+    };
+
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
                 <View style={styles.header}>
-                    <View style={styles.avatarContainer}>
-                        <Text style={styles.avatarText}>{initial}</Text>
-                    </View>
+                    <Pressable
+                        onPress={pickImage}
+                        style={({ pressed }) => [
+                            styles.avatarContainer,
+                            pressed && { opacity: 0.8 },
+                        ]}
+                        hitSlop={8}
+                    >
+                        {image ? (
+                            <Image
+                                source={{ uri: image }}
+                                style={{ width: 92, height: 92, borderRadius: 46 }}
+                            />
+                        ) : (
+                            <Text style={styles.avatarText}>{initial}</Text>
+                        )}
+                    </Pressable>
                     <Text style={styles.badge}>Perfil de Usuario</Text>
                     <Text style={styles.title}>Mi Cuenta</Text>
                     <Text style={styles.subtitle}>Gestiona y visualiza la información de tu perfil</Text>
@@ -115,6 +163,16 @@ export default function PerfilScreen({ navigation }) {
                 </View>
 
                 <View style={styles.actionsContainer}>
+                    <Pressable
+                        style={({ pressed }) => [
+                            styles.primaryButton,
+                            pressed && styles.primaryButtonPressed,
+                        ]}
+                        onPress={pickImage}
+                    >
+                        <Text style={styles.primaryButtonText}>📷 Seleccionar Foto de Perfil</Text>
+                    </Pressable>
+
                     <Pressable
                         style={({ pressed }) => [
                             styles.secondaryButton,
