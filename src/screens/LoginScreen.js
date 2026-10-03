@@ -11,6 +11,7 @@ import {
     View,
 } from 'react-native';
 import { login, resetPassword } from '../firebase/authService';
+import { GetUserTaskTest } from '../services/taskService';
 import { styles } from '../styles/LoginStyles';
 
 const firebaseMessages = {
@@ -24,6 +25,7 @@ export default function LoginScreen({ navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+    const [testingRules, setTestingRules] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     const getErrorMessage = (error) => firebaseMessages[error.code] || 'No se pudo iniciar sesión.';
@@ -58,6 +60,37 @@ export default function LoginScreen({ navigation }) {
             Alert.alert('Correo enviado', 'Revisa tu bandeja para restablecer la contraseña.');
         } catch (error) {
             Alert.alert('Firebase Auth', getErrorMessage(error));
+        }
+    };
+
+    const handleTestRules = async () => {
+        setTestingRules(true);
+        try {
+            // Se invoca GetUserTaskTest sin UID para intentar leer toda la colección de tareas sin autenticación
+            const tasks = await GetUserTaskTest();
+            const msg = `⚠️ Fallo de seguridad: Se obtuvieron ${tasks.length} tareas sin iniciar sesión.`;
+            if (Platform.OS === 'web' && typeof window !== 'undefined') {
+                window.alert(msg);
+            } else {
+                Alert.alert('Alerta de seguridad', msg);
+            }
+        } catch (error) {
+            const isPermissionDenied =
+                error?.code === 'permission-denied' ||
+                error?.message?.includes('Missing or insufficient permissions');
+
+            const titulo = isPermissionDenied ? '✅ Reglas Funcionando' : 'Error en la prueba';
+            const detalle = isPermissionDenied
+                ? 'Firestore bloqueó la lectura exitosamente porque no hay una sesión activa.\n\nCódigo: permission-denied'
+                : `Error: ${error.message}`;
+
+            if (Platform.OS === 'web' && typeof window !== 'undefined') {
+                window.alert(`${titulo}\n\n${detalle}`);
+            } else {
+                Alert.alert(titulo, detalle);
+            }
+        } finally {
+            setTestingRules(false);
         }
     };
 
@@ -122,6 +155,33 @@ export default function LoginScreen({ navigation }) {
 
                     <Pressable onPress={handleResetPassword} style={styles.linkButton}>
                         <Text style={styles.linkText}>¿Olvidaste tu contraseña?</Text>
+                    </Pressable>
+
+                    <Pressable
+                        style={({ pressed }) => [
+                            {
+                                marginTop: 14,
+                                paddingVertical: 12,
+                                paddingHorizontal: 16,
+                                borderRadius: 12,
+                                borderWidth: 1,
+                                borderColor: '#cbd5e1',
+                                backgroundColor: '#f8fafc',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            },
+                            pressed && { backgroundColor: '#e2e8f0', transform: [{ scale: 0.99 }] },
+                        ]}
+                        onPress={handleTestRules}
+                        disabled={loading || testingRules}
+                    >
+                        {testingRules ? (
+                            <ActivityIndicator size="small" color="#475569" />
+                        ) : (
+                            <Text style={{ color: '#475569', fontSize: 13, fontWeight: '600' }}>
+                                🧪 Probar Reglas de Firestore (sin sesión)
+                            </Text>
+                        )}
                     </Pressable>
                 </View>
 

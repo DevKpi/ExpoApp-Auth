@@ -73,6 +73,34 @@ export const GetUserTask = async (userId) => {
 export const getUserTask = GetUserTask;
 export const getUserTasks = GetUserTask;
 
+// GetTask de testing
+export const GetUserTaskTest = async (userId) => {
+    try {
+        const tareasRef = collection(db, 'tareas');
+        const q = userId
+            ? query(tareasRef)
+            : query(tareasRef);
+
+        const querySnapshot = await getDocs(q);
+
+        const tasks = [];
+        querySnapshot.forEach((docSnapshot) => {
+            tasks.push({
+                id: docSnapshot.id,
+                ...docSnapshot.data(),
+            });
+        });
+
+        return tasks;
+    } catch (error) {
+        console.error('Error al obtener tareas:', error);
+        throw error;
+    }
+};
+
+export const getUserTaskTest = GetUserTaskTest;
+export const getUserTasksTest = GetUserTaskTest;
+
 /**
  * Actualiza una tarea en la colección 'tareas' de Firestore.
  * Utilizado para alternar el estado (completada) o actualizar campos de una tarea.
