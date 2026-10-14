@@ -10,8 +10,7 @@ import { db } from '../firebase/firebase';
 
 import { saveUserData, getUser } from '../services/userService';
 import { guardarImagenPerfil, obtenerImagenPerfil } from '../services/storageService';
-
-import * as ImagePicker from 'expo-image-picker';
+import { pickImage as pickImageService } from '../services/ImageService';
 
 export default function PerfilScreen({ navigation }) {
     const { user } = useContext(AuthContext);
@@ -105,36 +104,11 @@ export default function PerfilScreen({ navigation }) {
     };
 
     const pickImage = async () => {
-        try {
-            // Solicitar permisos de galería si es necesario
-            const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-            if (!permissionResult.granted) {
-                Alert.alert(
-                    'Permiso requerido',
-                    'Se necesitan permisos de acceso a la galería para seleccionar una imagen.'
-                );
-                return;
-            }
-
-            const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ['images'],
-                allowsEditing: true,
-                aspect: [1, 1],
-                quality: 1,
-            });
-
-            console.log('Resultado de ImagePicker:', result);
-
-            if (!result.canceled && result.assets && result.assets.length > 0) {
-                const selectedUri = result.assets[0].uri;
-                setImage(selectedUri);
-                console.log(selectedUri);
-                await guardarImagenPerfil(selectedUri, user?.uid);
-            }
-        } catch (error) {
-            console.error('Error al seleccionar imagen:', error);
-            Alert.alert('Error', 'No se pudo abrir la galería de imágenes.');
+        const uri = await pickImageService();
+        if (uri) {
+            setImage(uri);
+            console.log(uri);
+            await guardarImagenPerfil(uri, user?.uid);
         }
     };
 
