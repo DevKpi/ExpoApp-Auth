@@ -9,6 +9,7 @@ import {addDoc, collection, doc, setDoc} from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 
 import { saveUserData, getUser } from '../services/userService';
+import { guardarImagenPerfil, obtenerImagenPerfil } from '../services/storageService';
 
 import * as ImagePicker from 'expo-image-picker';
 
@@ -51,7 +52,21 @@ export default function PerfilScreen({ navigation }) {
             }
         };
 
+        const loadStoredImage = async () => {
+            try {
+                console.log('📡 [PerfilScreen] Cargando imagen previa desde almacenamiento local...');
+                const savedImage = await obtenerImagenPerfil(user?.uid);
+                if (savedImage) {
+                    console.log('📸 [PerfilScreen] Imagen recuperada de almacenamiento:', savedImage);
+                    setImage(savedImage);
+                }
+            } catch (error) {
+                console.error('❌ [PerfilScreen] Error al cargar imagen del almacenamiento:', error);
+            }
+        };
+
         loadProfile();
+        loadStoredImage();
 
         return () => {
             console.log('🧹 [PerfilScreen] Limpieza del useEffect (desmontaje o cambio de usuario)');
@@ -112,8 +127,10 @@ export default function PerfilScreen({ navigation }) {
             console.log('Resultado de ImagePicker:', result);
 
             if (!result.canceled && result.assets && result.assets.length > 0) {
-                setImage(result.assets[0].uri);
-                console.log(result.assets[0].uri);
+                const selectedUri = result.assets[0].uri;
+                setImage(selectedUri);
+                console.log(selectedUri);
+                await guardarImagenPerfil(selectedUri, user?.uid);
             }
         } catch (error) {
             console.error('Error al seleccionar imagen:', error);
