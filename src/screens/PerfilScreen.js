@@ -10,7 +10,7 @@ import { db } from '../firebase/firebase';
 
 import { saveUserData, getUser } from '../services/userService';
 import { guardarImagenPerfil, obtenerImagenPerfil } from '../services/storageService';
-import { pickImage as pickImageService } from '../services/ImageService';
+import { showImageSourceOptions, pickImage as pickImageFromGallery, takePhoto } from '../services/ImageService';
 
 export default function PerfilScreen({ navigation }) {
     const { user } = useContext(AuthContext);
@@ -103,13 +103,12 @@ export default function PerfilScreen({ navigation }) {
         }
     };
 
-    const pickImage = async () => {
-        const uri = await pickImageService();
-        if (uri) {
+    const pickImage = () => {
+        showImageSourceOptions(async (uri) => {
             setImage(uri);
-            console.log(uri);
+            console.log('📸 Imagen de perfil seleccionada/tomada:', uri);
             await guardarImagenPerfil(uri, user?.uid);
-        }
+        });
     };
 
     return (
@@ -162,7 +161,7 @@ export default function PerfilScreen({ navigation }) {
                         ]}
                         onPress={pickImage}
                     >
-                        <Text style={styles.primaryButtonText}>📷 Seleccionar Foto de Perfil</Text>
+                        <Text style={styles.primaryButtonText}>📷 Cambiar Foto de Perfil</Text>
                     </Pressable>
 
                     <Pressable
