@@ -15,6 +15,7 @@
     "@react-navigation/native-stack": "^7.17.5",
     "expo": "^57.0.20",
     "expo-image-picker": "~57.0.20",
+    "expo-location": "~57.0.21",
     "expo-secure-store": "~57.0.3",
     "expo-status-bar": "~57.0.1",
     "firebase": "^12.18.0",
