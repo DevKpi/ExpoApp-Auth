@@ -62,6 +62,16 @@ export default function HomeScreen({ navigation }) {
 
                     <Pressable
                         style={({ pressed }) => [
+                            styles.primaryButton,
+                            pressed && styles.primaryButtonPressed,
+                        ]}
+                        onPress={() => navigation.navigate('LocationScreen')}
+                    >
+                        <Text style={styles.primaryButtonText}>Ver Ubicación</Text>
+                    </Pressable>
+
+                    <Pressable
+                        style={({ pressed }) => [
                             styles.logoutButton,
                             pressed && styles.logoutButtonPressed,
                         ]}
