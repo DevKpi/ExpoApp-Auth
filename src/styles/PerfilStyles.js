@@ -5,14 +5,78 @@ export const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#f8fafc',
     },
+    header: {
+        paddingTop: Platform.OS === 'ios' ? 60 : 44,
+        paddingHorizontal: 24,
+        paddingBottom: 16,
+        backgroundColor: '#ffffff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#f1f5f9',
+    },
+    headerTopRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    backButtonText: {
+        color: '#2563eb',
+        fontSize: 15,
+        fontWeight: '600',
+    },
+    badge: {
+        alignSelf: 'flex-start',
+        backgroundColor: '#eff6ff',
+        borderColor: '#bfdbfe',
+        borderRadius: 20,
+        borderWidth: 1,
+        color: '#2563eb',
+        fontSize: 11,
+        fontWeight: '700',
+        letterSpacing: 1.2,
+        paddingHorizontal: 12,
+        paddingVertical: 4,
+        textTransform: 'uppercase',
+    },
+    title: {
+        color: '#0f172a',
+        fontSize: 28,
+        fontWeight: '800',
+        letterSpacing: -0.5,
+        marginBottom: 4,
+    },
+    subtitle: {
+        color: '#64748b',
+        fontSize: 14,
+    },
     scrollContent: {
         flexGrow: 1,
         paddingHorizontal: 24,
-        paddingVertical: 36,
+        paddingVertical: 24,
+        paddingBottom: 40,
     },
-    header: {
-        marginBottom: 28,
+    avatarCard: {
+        backgroundColor: '#ffffff',
+        borderColor: '#f1f5f9',
+        borderRadius: 20,
+        borderWidth: 1,
+        padding: 24,
+        marginBottom: 20,
         alignItems: 'center',
+        ...Platform.select({
+            ios: {
+                shadowColor: '#1e293b',
+                shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.08,
+                shadowRadius: 18,
+            },
+            android: {
+                elevation: 4,
+            },
+            web: {
+                boxShadow: '0 10px 25px -5px rgba(15, 23, 42, 0.06)',
+            },
+        }),
     },
     avatarContainer: {
         width: 96,
@@ -23,7 +87,7 @@ export const styles = StyleSheet.create({
         borderWidth: 2,
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 16,
+        marginBottom: 14,
         ...Platform.select({
             ios: {
                 shadowColor: '#2563eb',
@@ -39,38 +103,25 @@ export const styles = StyleSheet.create({
             },
         }),
     },
+    avatarImage: {
+        width: 92,
+        height: 92,
+        borderRadius: 46,
+    },
     avatarText: {
         color: '#2563eb',
         fontSize: 36,
         fontWeight: '800',
     },
-    badge: {
-        backgroundColor: '#eff6ff',
-        borderColor: '#bfdbfe',
-        borderRadius: 20,
-        borderWidth: 1,
-        color: '#2563eb',
-        fontSize: 11,
-        fontWeight: '700',
-        letterSpacing: 1.2,
-        marginBottom: 14,
-        overflow: 'hidden',
-        paddingHorizontal: 12,
-        paddingVertical: 5,
-        textTransform: 'uppercase',
-    },
-    title: {
+    avatarName: {
         color: '#0f172a',
-        fontSize: 28,
-        fontWeight: '800',
-        letterSpacing: -0.8,
-        marginBottom: 6,
-        textAlign: 'center',
+        fontSize: 20,
+        fontWeight: '700',
+        marginBottom: 2,
     },
-    subtitle: {
+    avatarEmail: {
         color: '#64748b',
-        fontSize: 15,
-        textAlign: 'center',
+        fontSize: 14,
     },
     card: {
         backgroundColor: '#ffffff',
@@ -78,7 +129,7 @@ export const styles = StyleSheet.create({
         borderRadius: 20,
         borderWidth: 1,
         padding: 24,
-        marginBottom: 24,
+        marginBottom: 20,
         ...Platform.select({
             ios: {
                 shadowColor: '#1e293b',
@@ -103,13 +154,13 @@ export const styles = StyleSheet.create({
         textTransform: 'uppercase',
     },
     infoRow: {
-        marginBottom: 16,
+        marginBottom: 12,
     },
     infoRowDivider: {
         borderBottomWidth: 1,
         borderBottomColor: '#f1f5f9',
-        paddingBottom: 16,
-        marginBottom: 16,
+        paddingBottom: 14,
+        marginBottom: 14,
     },
     infoLabel: {
         color: '#64748b',

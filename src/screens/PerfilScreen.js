@@ -113,8 +113,19 @@ export default function PerfilScreen({ navigation }) {
 
     return (
         <View style={styles.container}>
+            <View style={styles.header}>
+                <View style={styles.headerTopRow}>
+                    <Text style={styles.badge}>Perfil de Usuario</Text>
+                    <Pressable onPress={() => navigation.goBack()} hitSlop={10}>
+                        <Text style={styles.backButtonText}>← Volver</Text>
+                    </Pressable>
+                </View>
+                <Text style={styles.title}>Mi Cuenta</Text>
+                <Text style={styles.subtitle}>Gestiona y visualiza la información de tu perfil</Text>
+            </View>
+
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                <View style={styles.header}>
+                <View style={styles.avatarCard}>
                     <Pressable
                         onPress={pickImage}
                         style={({ pressed }) => [
@@ -126,15 +137,18 @@ export default function PerfilScreen({ navigation }) {
                         {image ? (
                             <Image
                                 source={{ uri: image }}
-                                style={{ width: 92, height: 92, borderRadius: 46 }}
+                                style={styles.avatarImage}
                             />
                         ) : (
                             <Text style={styles.avatarText}>{initial}</Text>
                         )}
                     </Pressable>
-                    <Text style={styles.badge}>Perfil de Usuario</Text>
-                    <Text style={styles.title}>Mi Cuenta</Text>
-                    <Text style={styles.subtitle}>Gestiona y visualiza la información de tu perfil</Text>
+                    <Text style={styles.avatarName}>
+                        {user?.email ? user.email.split('@')[0] : 'Usuario'}
+                    </Text>
+                    <Text style={styles.avatarEmail}>
+                        {user?.email || 'Sin correo registrado'}
+                    </Text>
                 </View>
 
                 <View style={styles.card}>
@@ -162,16 +176,6 @@ export default function PerfilScreen({ navigation }) {
                         onPress={pickImage}
                     >
                         <Text style={styles.primaryButtonText}>📷 Cambiar Foto de Perfil</Text>
-                    </Pressable>
-
-                    <Pressable
-                        style={({ pressed }) => [
-                            styles.secondaryButton,
-                            pressed && styles.secondaryButtonPressed,
-                        ]}
-                        onPress={() => navigation.goBack()}
-                    >
-                        <Text style={styles.secondaryButtonText}>Volver al Inicio</Text>
                     </Pressable>
 
                     <Pressable
