@@ -5,6 +5,7 @@ import ConfigScreen from '../screens/ConfigScreen';
 import TaskScreen from '../screens/TaskScreen';
 import AddTaskScreen from '../screens/AddTaskScreen';
 import LocationScreen from '../screens/LocationScreen';
+import MapScreen from '../screens/MapScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,6 +22,7 @@ export default function AppStack() {
             <Stack.Screen name="LocationScreen" component={LocationScreen} />
             <Stack.Screen name="Location" component={LocationScreen} />
             <Stack.Screen name="Ubicacion" component={LocationScreen} />
+            <Stack.Screen name="Map" component={MapScreen} />
             {/* <Stack.Screen name="Configuración" component={ConfigScreen} /> */}
         </Stack.Navigator>
     );

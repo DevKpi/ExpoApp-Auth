@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
-import { getCurrentLocation, watchPosition } from '../services/LocationService';
+import { getCurrentLocation, watchPosition } from '../services/locationService';
 import { styles } from '../styles/LocationStyles';
 
 export default function LocationScreen({ navigation }) {
@@ -162,6 +162,16 @@ export default function LocationScreen({ navigation }) {
                         disabled={loading}
                     >
                         <Text style={styles.secondaryButtonText}>📍 Obtener Ubicación Puntual</Text>
+                    </Pressable>
+
+                    <Pressable
+                        style={({ pressed }) => [
+                            styles.secondaryButton,
+                            pressed && styles.secondaryButtonPressed,
+                        ]}
+                        onPress={() => navigation.navigate('Map')}
+                    >
+                        <Text style={styles.secondaryButtonText}>🗺️ Ver en el Mapa</Text>
                     </Pressable>
                 </View>
             </ScrollView>
