@@ -20,6 +20,7 @@ const initialRegion = {
 
 export default function MapScreen({ navigation }) {
     const [location, setLocation] = useState(null);
+    const [selectedPoint, setSelectedPoint] = useState(null);
     const [loading, setLoading] = useState(false);
 
     const mapRef = useRef(null);
@@ -104,7 +105,13 @@ export default function MapScreen({ navigation }) {
                 style={styles.map}
                 initialRegion={initialRegion}
                 showsUserLocation={true}
+                onPress={(event) => {
+                    const coordenadas = event.nativeEvent.coordinate;
+                    console.log('Coordenadas capturadas:', coordenadas);
+                    setSelectedPoint(coordenadas);
+                }}
             >
+                {/* Marcador de ubicación fija o actual */}
                 {location && (
                     <Marker
                         coordinate={{
@@ -112,9 +119,39 @@ export default function MapScreen({ navigation }) {
                             longitude: location.longitude,
                         }}
                         title={location.title || 'Mi ubicación'}
+                        pinColor="#2563eb"
+                    />
+                )}
+
+                {/* Marcador del punto seleccionado al tocar el mapa */}
+                {selectedPoint && (
+                    <Marker
+                        coordinate={selectedPoint}
+                        title="Punto seleccionado"
+                        description={`Lat: ${selectedPoint.latitude.toFixed(5)}, Lon: ${selectedPoint.longitude.toFixed(5)}`}
+                        pinColor="#ef4444"
                     />
                 )}
             </MapView>
+
+            {/* Banner flotante si hay un punto seleccionado */}
+            {selectedPoint && (
+                <View style={styles.selectedPointBanner}>
+                    <View style={styles.selectedPointInfo}>
+                        <Text style={styles.selectedPointTitle}>📍 Punto marcado:</Text>
+                        <Text style={styles.selectedPointCoords}>
+                            {selectedPoint.latitude.toFixed(5)}, {selectedPoint.longitude.toFixed(5)}
+                        </Text>
+                    </View>
+                    <Pressable
+                        onPress={() => setSelectedPoint(null)}
+                        hitSlop={8}
+                        style={styles.clearButton}
+                    >
+                        <Text style={styles.clearButtonText}>✕</Text>
+                    </Pressable>
+                </View>
+            )}
 
             <View style={styles.controls}>
                 <Pressable
@@ -188,6 +225,55 @@ const styles = StyleSheet.create({
     },
     map: {
         flex: 1,
+    },
+    selectedPointBanner: {
+        position: 'absolute',
+        top: Platform.OS === 'ios' ? 110 : 96,
+        left: 20,
+        right: 20,
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        paddingVertical: 10,
+        paddingHorizontal: 16,
+        borderRadius: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        elevation: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 4,
+        borderWidth: 1,
+        borderColor: '#e2e8f0',
+        zIndex: 20,
+    },
+    selectedPointInfo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+    },
+    selectedPointTitle: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: '#0f172a',
+    },
+    selectedPointCoords: {
+        fontSize: 13,
+        color: '#475569',
+        fontVariant: ['tabular-nums'],
+    },
+    clearButton: {
+        backgroundColor: '#f1f5f9',
+        borderRadius: 12,
+        width: 24,
+        height: 24,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    clearButtonText: {
+        fontSize: 12,
+        fontWeight: '700',
+        color: '#64748b',
     },
     controls: {
         position: 'absolute',
