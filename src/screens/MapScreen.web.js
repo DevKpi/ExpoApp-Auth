@@ -11,6 +11,13 @@ import {
 } from 'react-native';
 import { getCurrentLocation } from '../services/locationService';
 
+const initialRegion = {
+    latitude: -33.68,
+    longitude: -59.66,
+    latitudeDelta: 0.05,
+    longitudeDelta: 0.05,
+};
+
 export default function MapScreen({ navigation }) {
     const [location, setLocation] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -19,7 +26,11 @@ export default function MapScreen({ navigation }) {
         try {
             setLoading(true);
             const coords = await getCurrentLocation();
-            setLocation(coords);
+            setLocation({
+                latitude: coords.latitude,
+                longitude: coords.longitude,
+                title: 'Mi ubicación',
+            });
         } catch (error) {
             Alert.alert('Error', 'No se pudo obtener la ubicación.');
         } finally {
@@ -27,9 +38,17 @@ export default function MapScreen({ navigation }) {
         }
     };
 
+    const ubicarEnInitialRegion = () => {
+        setLocation({
+            latitude: initialRegion.latitude,
+            longitude: initialRegion.longitude,
+            title: 'Región Inicial (San Pedro)',
+        });
+    };
+
     const abrirGoogleMaps = () => {
-        const lat = location ? location.latitude : -33.68;
-        const lng = location ? location.longitude : -59.66;
+        const lat = location ? location.latitude : initialRegion.latitude;
+        const lng = location ? location.longitude : initialRegion.longitude;
         const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
         Linking.openURL(url);
     };
@@ -66,7 +85,7 @@ export default function MapScreen({ navigation }) {
 
                     {location && (
                         <View style={styles.coordsBox}>
-                            <Text style={styles.coordsTitle}>Coordenadas obtenidas:</Text>
+                            <Text style={styles.coordsTitle}>{location.title || 'Coordenadas'}:</Text>
                             <Text style={styles.coordsText}>Latitud: {location.latitude}</Text>
                             <Text style={styles.coordsText}>Longitud: {location.longitude}</Text>
                         </View>
@@ -87,9 +106,16 @@ export default function MapScreen({ navigation }) {
 
                         <Pressable
                             style={styles.secondaryButton}
+                            onPress={ubicarEnInitialRegion}
+                        >
+                            <Text style={styles.secondaryButtonText}>📌 Ubicar en Región Inicial</Text>
+                        </Pressable>
+
+                        <Pressable
+                            style={styles.outlineButton}
                             onPress={abrirGoogleMaps}
                         >
-                            <Text style={styles.secondaryButtonText}>🌐 Ver en Google Maps (Navegador)</Text>
+                            <Text style={styles.outlineButtonText}>🌐 Ver en Google Maps (Navegador)</Text>
                         </Pressable>
                     </View>
                 </View>
@@ -221,6 +247,20 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     secondaryButton: {
+        backgroundColor: '#ffffff',
+        borderWidth: 1.5,
+        borderColor: '#cbd5e1',
+        paddingVertical: 14,
+        borderRadius: 12,
+        alignItems: 'center',
+        cursor: 'pointer',
+    },
+    secondaryButtonText: {
+        color: '#1e293b',
+        fontSize: 15,
+        fontWeight: '600',
+    },
+    outlineButton: {
         backgroundColor: '#f8fafc',
         borderWidth: 1.5,
         borderColor: '#e2e8f0',
@@ -229,7 +269,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         cursor: 'pointer',
     },
-    secondaryButtonText: {
+    outlineButtonText: {
         color: '#334155',
         fontSize: 15,
         fontWeight: '600',

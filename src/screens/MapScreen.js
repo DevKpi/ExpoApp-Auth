@@ -29,7 +29,11 @@ export default function MapScreen({ navigation }) {
             setLoading(true);
 
             const coords = await getCurrentLocation();
-            setLocation(coords);
+            setLocation({
+                latitude: coords.latitude,
+                longitude: coords.longitude,
+                title: 'Mi ubicación',
+            });
 
             mapRef.current?.animateToRegion(
                 {
@@ -57,6 +61,24 @@ export default function MapScreen({ navigation }) {
         } finally {
             setLoading(false);
         }
+    };
+
+    const ubicarEnInitialRegion = () => {
+        setLocation({
+            latitude: initialRegion.latitude,
+            longitude: initialRegion.longitude,
+            title: 'Región Inicial (San Pedro)',
+        });
+
+        mapRef.current?.animateToRegion(
+            {
+                latitude: initialRegion.latitude,
+                longitude: initialRegion.longitude,
+                latitudeDelta: initialRegion.latitudeDelta,
+                longitudeDelta: initialRegion.longitudeDelta,
+            },
+            1000
+        );
     };
 
     return (
@@ -89,7 +111,7 @@ export default function MapScreen({ navigation }) {
                             latitude: location.latitude,
                             longitude: location.longitude,
                         }}
-                        title="Mi ubicación"
+                        title={location.title || 'Mi ubicación'}
                     />
                 )}
             </MapView>
@@ -109,6 +131,16 @@ export default function MapScreen({ navigation }) {
                     ) : (
                         <Text style={styles.buttonText}>📍 Ir a mi ubicación</Text>
                     )}
+                </Pressable>
+
+                <Pressable
+                    style={({ pressed }) => [
+                        styles.secondaryButton,
+                        pressed && styles.secondaryButtonPressed,
+                    ]}
+                    onPress={ubicarEnInitialRegion}
+                >
+                    <Text style={styles.secondaryButtonText}>📌 Ubicar en Región Inicial</Text>
                 </Pressable>
             </View>
         </View>
@@ -162,6 +194,7 @@ const styles = StyleSheet.create({
         bottom: 24,
         left: 20,
         right: 20,
+        gap: 10,
         zIndex: 20,
         elevation: 5,
     },
@@ -187,6 +220,29 @@ const styles = StyleSheet.create({
     buttonText: {
         color: '#ffffff',
         fontSize: 16,
+        fontWeight: '600',
+    },
+    secondaryButton: {
+        backgroundColor: '#ffffff',
+        borderWidth: 1.5,
+        borderColor: '#cbd5e1',
+        paddingVertical: 13,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 3,
+    },
+    secondaryButtonPressed: {
+        backgroundColor: '#f1f5f9',
+        transform: [{ scale: 0.99 }],
+    },
+    secondaryButtonText: {
+        color: '#1e293b',
+        fontSize: 15,
         fontWeight: '600',
     },
 });
