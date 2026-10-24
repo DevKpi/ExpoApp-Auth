@@ -18,6 +18,21 @@ const initialRegion = {
     longitudeDelta: 0.05,
 };
 
+const lugares = [
+    {
+        id: '1',
+        nombre: 'Lugar A',
+        latitude: -33.68,
+        longitude: -59.66,
+    },
+    {
+        id: '2',
+        nombre: 'Lugar B',
+        latitude: -33.69,
+        longitude: -59.65,
+    },
+];
+
 export default function MapScreen({ navigation }) {
     const [location, setLocation] = useState(null);
     const [selectedPoint, setSelectedPoint] = useState(null);
@@ -111,6 +126,18 @@ export default function MapScreen({ navigation }) {
                     setSelectedPoint(coordenadas);
                 }}
             >
+                {/* Lugares predefinidos */}
+                {lugares.map((lugar) => (
+                    <Marker
+                        key={lugar.id}
+                        coordinate={{
+                            latitude: lugar.latitude,
+                            longitude: lugar.longitude,
+                        }}
+                        title={lugar.nombre}
+                    />
+                ))}
+
                 {/* Marcador de ubicación fija o actual */}
                 {location && (
                     <Marker
